@@ -7,3 +7,4 @@ plotly
 pandas
 PyPDF2
 fpdf
+tldextract
