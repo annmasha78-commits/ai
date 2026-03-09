@@ -6,3 +6,4 @@ requests
 plotly
 pandas
 PyPDF2
+fpdf
