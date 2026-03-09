@@ -3,3 +3,5 @@ google-generativeai
 Pillow
 beautifulsoup4
 requests
+plotly
+pandas
