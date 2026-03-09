@@ -5,3 +5,4 @@ beautifulsoup4
 requests
 plotly
 pandas
+PyPDF2
