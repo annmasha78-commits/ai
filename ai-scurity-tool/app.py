@@ -24,7 +24,7 @@ try:
     
     # Preferred models in order, ensuring they support formatting and image/text if possible
     preferred_models = [
-        "models/gemini-1.5-flash-latest",
+        "models/gemini-pro",
         "models/gemini-1.5-pro-latest",
         "models/gemini-2.0-flash",
         "models/gemini-pro"
@@ -41,7 +41,7 @@ try:
         model = genai.GenerativeModel(available_models[0])
 except Exception:
     # Absolute fallback
-    model = genai.GenerativeModel('gemini-1.5-flash-latest')
+    model = genai.GenerativeModel('gemini-pro')
 
 # --- 2. Web UI Design - Ultra Premium Dashboard ---
 st.set_page_config(
