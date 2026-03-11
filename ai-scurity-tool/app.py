@@ -16,11 +16,32 @@ import base64
 
 # --- 1. AI Configuration (Gemini API Fallback) ---
 genai.configure(api_key="AIzaSyC2xF7TA7wMhB3poUbl_ayKtT-opO5rOO4")
+
+model = None
 try:
-    model = genai.GenerativeModel('gemini-1.5-flash-latest')
-except Exception:
+    # Fetch all models that support content generation
     available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
-    model = genai.GenerativeModel(available_models[0]) if available_models else None
+    
+    # Preferred models in order, ensuring they support formatting and image/text if possible
+    preferred_models = [
+        "models/gemini-1.5-flash",
+        "models/gemini-1.5-pro",
+        "models/gemini-2.0-flash",
+        "models/gemini-pro"
+    ]
+    
+    # Find the nearest match
+    for pref in preferred_models:
+        if pref in available_models or pref.replace("models/", "") in available_models:
+            model = genai.GenerativeModel(pref)
+            break
+            
+    # Fallback to the first available model if preferences fail
+    if not model and available_models:
+        model = genai.GenerativeModel(available_models[0])
+except Exception:
+    # Absolute fallback
+    model = genai.GenerativeModel('gemini-1.5-flash')
 
 # --- 2. Web UI Design - Ultra Premium Dashboard ---
 st.set_page_config(
