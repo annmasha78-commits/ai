@@ -1,0 +1,9 @@
+streamlit
+google-generativeai
+pillow
+fpdf
+tldextract
+beautifulsoup4
+plotly
+PyPDF2
+requests
