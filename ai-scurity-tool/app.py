@@ -135,10 +135,12 @@ st.markdown("""
 def check_domain_spoofing(url):
     is_suspicious = False
     warnings = []
-    if not url: return {"is_suspicious": is_suspicious, "warnings": warnings}
+    extracted_info = {}
+    if not url: return {"is_suspicious": is_suspicious, "warnings": warnings, "extracted_info": extracted_info}
     try:
         extracted = tldextract.extract(url)
         domain, subdomain, suffix = extracted.domain, extracted.subdomain, extracted.suffix.lower()
+        extracted_info = {"domain": domain, "subdomain": subdomain, "suffix": suffix}
         if len(domain) > 25:
             warnings.append(f"Domain '{domain}' is unusually long (>25 chars), indicative of spoofing.")
             is_suspicious = True
@@ -159,7 +161,7 @@ def check_domain_spoofing(url):
     except Exception as e:
         warnings.append(f"Could not parse domain structure correctly: {e}")
         is_suspicious = True
-    return {"is_suspicious": is_suspicious, "warnings": list(set(warnings))}
+    return {"is_suspicious": is_suspicious, "warnings": list(set(warnings)), "extracted_info": extracted_info}
 
 def create_gauge_chart(score):
     if score <= 30: 
@@ -424,8 +426,8 @@ with st.sidebar:
         "", 
         [
             "📝 Text & Script Analysis", 
-            "🔗 Deep Web Identity Scan", 
-            "🖼️ UI & PDF Forensics"
+            "🔗 Domain Surgery & Web Scan", 
+            "🖼️ OCR & Vision (UI/PDF Forensics)"
         ], 
         label_visibility="collapsed"
     )
@@ -474,8 +476,8 @@ if app_mode == "📝 Text & Script Analysis":
             else: 
                 st.warning("⚠️ Payload empty. Please provide content to analyze.")
 
-elif app_mode == "🔗 Deep Web Identity Scan":
-    st.markdown("### 🔗 Deep Web URL & Domain Integrity Scanner")
+elif app_mode == "🔗 Domain Surgery & Web Scan":
+    st.markdown("### 🔗 Domain Surgery & Deep Web Identity Scan")
     st.markdown("<p style='color:#9ca3af; margin-bottom: 20px;'>Execute real-time heuristic checks against target URLs to detect homograph attacks, typosquatting, and parse hidden malicious payloads from live sites.</p>", unsafe_allow_html=True)
     
     col1, col2 = st.columns([3, 1])
@@ -496,6 +498,13 @@ elif app_mode == "🔗 Deep Web Identity Scan":
                 time.sleep(0.5) # Simulate processing for UI feel
                 spoof_check = check_domain_spoofing(user_url)
                 
+                ext = spoof_check.get("extracted_info")
+                if isinstance(ext, dict) and ext:
+                    d_val = ext.get('domain', '')
+                    s_val = ext.get('suffix', '')
+                    sub_val = ext.get('subdomain', '')
+                    st.markdown(f"**🔍 Domain Surgery (TLDExtract):** Parsing URL to detect real domain vs subdomains.<br>&nbsp;&nbsp;&nbsp;&nbsp;↳ **True Domain:** `{d_val}.{s_val}`<br>&nbsp;&nbsp;&nbsp;&nbsp;↳ **Subdomain:** `{sub_val if sub_val else 'None'}`", unsafe_allow_html=True)
+
                 if spoof_check["is_suspicious"]:
                     domain_spoof_alerts = spoof_check["warnings"]
                     st.write("❌ Critical anomalies found in domain structure.")
@@ -517,8 +526,8 @@ elif app_mode == "🔗 Deep Web Identity Scan":
         else: 
             st.warning("⚠️ Invalid URI. Please provide a structurally valid URL.")
 
-elif app_mode == "🖼️ UI & PDF Forensics":
-    st.markdown("### 🖼️ UI Dark Pattern & PDF Document Forensics")
+elif app_mode == "🖼️ OCR & Vision (UI/PDF Forensics)":
+    st.markdown("### 🖼️ OCR & Vision (UI Dark Pattern Forensics)")
     st.markdown("<p style='color:#9ca3af; margin-bottom: 20px;'>Upload visual evidence (screenshots of interfaces) or documents (PDFs) to detect forced continuity, fake urgency, hidden malicious macros, or deceptive design architectures.</p>", unsafe_allow_html=True)
     
     uploaded_file = st.file_uploader("Upload Evidence Container (PNG/JPG/PDF):", type=['png', 'jpg', 'jpeg', 'pdf'])
@@ -540,7 +549,8 @@ elif app_mode == "🖼️ UI & PDF Forensics":
                 else:
                     try:
                         target_image = Image.open(uploaded_file)
-                        target_text = "Thoroughly analyze the provided UI layout, texts, and design elements within this image/screenshot to determine its true intent, explicitly checking for forced UX dark patterns, fake urgency, hidden costs, and deceptive buttons."
+                        st.success("🔍 **OCR & Vision Engine Active:** Scanning pixels for Malicious UI elements...")
+                        target_text = "Thoroughly scan the pixels using OCR and Vision capabilities. Analyze the provided UI layout, texts, and design elements within this image/screenshot to determine its true intent, explicitly checking for Malicious UI elements, forced UX dark patterns, fake urgency, hidden costs, and deceptive buttons."
                         context_info = "Image/Screenshot UI"
                         run_analysis = True
                         st.markdown("<br><p style='text-align:center; color:#9ca3af;'>Uploaded Image Evidence:</p>", unsafe_allow_html=True)
